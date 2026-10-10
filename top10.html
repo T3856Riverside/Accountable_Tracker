@@ -1,0 +1,73 @@
+<!--
+    Project: Employee Occurrence Tracker
+    Date: October 10, 2026
+
+    Description:
+    Displays the ten team members with the highest number of accountable
+    occurrence records from the spreadsheet loaded on the Employee Search page.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Top 10 team members with accountables">
+  <title>Top 10 Accountables | Employee Occurrence Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="top10.js"></script>
+</head>
+<body>
+  <!-- Shared Target-themed header -->
+  <header class="topbar">
+    <div class="brand">
+      <img class="header-target" src="assets/target-bullseye.png" alt="" aria-hidden="true">
+      <div class="brand-copy">
+        <h1>TOP 10 ACCOUNTABLES</h1>
+        <p>RANK <span>•</span> REVIEW <span>•</span> TAKE ACTION</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="fileStatus" class="file-status">No spreadsheet loaded</span>
+      <a class="button button-white" href="index.html">↑ Employee Search</a>
+    </div>
+    <img class="header-mascot" src="assets/bullseye-running.png" alt="Bullseye, the Target dog mascot">
+  </header>
+
+  <!-- Navigate between the employee search and leaderboard pages -->
+  <nav class="site-nav" aria-label="Main navigation">
+    <a class="nav-link" href="index.html">Employee Search</a>
+    <a class="nav-link active" href="top10.html" aria-current="page">Top 10 Accountables</a>
+  </nav>
+
+  <main class="page">
+    <section class="card">
+      <div class="section-title">TOP 10 TEAM MEMBERS WITH ACCOUNTABLES</div>
+      <div class="leaderboard-intro">
+        <h2>Accountability Leaderboard</h2>
+        <p>Rankings are calculated from the occurrence records in the currently loaded spreadsheet. Select a team member to open their profile on the Employee Search page.</p>
+      </div>
+      <div id="leaderboardEmpty" class="leaderboard-empty">
+        <img src="assets/bullseye-portrait.png" alt="">
+        <p>Upload your occurrence spreadsheet on the Employee Search page first. Once it is loaded, return here to see the Top 10.</p>
+      </div>
+      <div id="leaderboardWrap" class="leaderboard-wrap hidden">
+        <table class="leaderboard-table">
+          <thead>
+            <tr><th>Rank</th><th>Team Member</th><th>DC Key</th><th>Employee Number</th><th>Accountables</th><th>Hours</th><th>Profile</th></tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+      <p class="leaderboard-note">Each qualifying row in the uploaded occurrence data counts as one accountable record. TMs are ranked from highest to lowest record count.</p>
+    </section>
+
+    <footer>
+      <div class="footer-credit">
+        <strong>Employee Occurrence Tracker</strong>
+        <span>Designed and developed at T-3856</span>
+        <small>© 2026 T-3856</small>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

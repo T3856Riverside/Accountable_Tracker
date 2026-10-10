@@ -1,0 +1,139 @@
+<!--
+    Project: Employee Occurrence Tracker
+    Date: October 10, 2026
+
+    Description:
+    Upload an Excel occurrence spreadsheet, search for team members,
+    review occurrence details, filter by occurrence type, export a PDF
+    report, and view the Top 10 team members with accountables.
+
+    Technologies: HTML, CSS, JavaScript, SheetJS, and jsPDF.
+    Spreadsheet records are processed locally in the browser.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Local employee occurrence tracker">
+  <title>Employee Occurrence Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Libraries for reading Excel files and generating PDF reports -->
+  <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="header-target" src="assets/target-bullseye.png" alt="" aria-hidden="true">
+      <div class="brand-copy">
+        <h1>EMPLOYEE OCCURRENCE TRACKER</h1>
+        <p>SEARCH <span>•</span> VIEW DETAILS <span>•</span> TRACK OCCURRENCES</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="fileStatus" class="file-status">No spreadsheet loaded</span>
+      <label class="button button-white" for="fileInput">↑ Upload Excel File</label>
+      <input id="fileInput" type="file" accept=".xlsx,.xls,.xlsm,.csv" hidden>
+    </div>
+    <img class="header-mascot" src="assets/bullseye-running.png" alt="Bullseye, the Target dog mascot">
+  </header>
+
+  <!-- Main navigation between employee search and the Top 10 leaderboard -->
+  <nav class="site-nav" aria-label="Main navigation">
+    <a class="nav-link active" href="index.html" aria-current="page">Employee Search</a>
+    <a class="nav-link" href="top10.html">Top 10 Accountables</a>
+  </nav>
+
+  <main class="page">
+    <div class="top-grid">
+      <section class="card upload-card">
+        <div class="excel-icon" aria-hidden="true"><span>X</span><i></i></div>
+        <div class="upload-copy">
+          <h2>Upload Excel File</h2>
+          <p>Select your occurrence tracker spreadsheet</p>
+          <label class="button button-red choose-file" for="fileInput">↑ &nbsp; Choose File</label>
+        </div>
+      </section>
+
+      <section class="card search-card">
+        <label for="searchInput">Search by employee name, DC Key, or Employee Number</label>
+        <div class="search-box">
+          <span aria-hidden="true" class="search-symbol">⌕</span>
+          <input id="searchInput" type="search" placeholder="Enter a name, DC Key, or employee number..." autocomplete="off" disabled>
+          <button id="clearSearch" type="button" aria-label="Clear search">×</button>
+        </div>
+        <p id="statusMessage" class="status" role="status">Upload your Input Data spreadsheet to get started.</p>
+      </section>
+    </div>
+
+    <section class="card section-card">
+      <div class="section-title"><span>EMPLOYEE DETAILS</span><span class="target-dot" aria-hidden="true">◎</span></div>
+      <div id="emptyState" class="empty-state">
+        <img src="assets/bullseye-portrait.png" alt="" class="empty-mascot">
+        <div>
+          <h2>Ready when you are!</h2>
+          <p>Upload your occurrence spreadsheet, then search for an employee to view their details and history.</p>
+        </div>
+      </div>
+      <div id="employeeDetails" class="details-grid hidden">
+        <div class="detail-art">
+          <img src="assets/bullseye-portrait.png" alt="Bullseye mascot">
+        </div>
+        <div class="detail-label label-team">Team Member</div><div id="employeeName" class="detail-value">-</div>
+        <div class="detail-label label-dc">DC Key</div><div id="dcKey" class="detail-value">-</div>
+        <div class="detail-label label-number">Employee Number</div><div id="employeeNumber" class="detail-value">-</div>
+        <div class="detail-label label-count">Occurrence Count</div><div id="occurrenceCount" class="detail-value">-</div>
+        <div class="detail-label label-hours">Total Hours</div><div id="totalHours" class="detail-value">-</div>
+      </div>
+    </section>
+
+    <section class="card section-card history-card">
+      <div class="section-title"><span>OCCURRENCE HISTORY</span><span id="historyCount" class="history-count"></span></div>
+      <!-- Filter the selected employee's records and export a report -->
+      <div class="history-tools">
+        <label for="paycodeFilter">Filter by PAY CODE</label>
+        <select id="paycodeFilter" disabled>
+          <option value="">All pay codes</option>
+        </select>
+        <button id="exportPdf" type="button" class="button button-red" disabled>↓ Export TM Report (PDF)</button>
+      </div>
+      <div id="historyEmpty" class="table-empty">Search for an employee to see their occurrence history.</div>
+      <div id="tableWrap" class="table-wrap hidden">
+        <table>
+          <thead><tr>
+              <th>DC Key</th>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th>Employee Number</th>
+              <th>Date of Occ</th>
+              <th>Day</th>
+              <th class="number">Hours</th>
+              <th>Pay Code</th>
+              <th>Type</th>
+          </tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="matchCard" class="card section-card matches-card hidden">
+      <div class="section-title">MATCHING EMPLOYEES</div>
+      <p class="match-help">Your search matched more than one employee. Choose the correct person.</p>
+      <div id="matchList" class="match-list"></div>
+    </section>
+
+    <!-- Project credit and data controls -->
+    <footer>
+      <div class="footer-credit">
+        <strong>Employee Occurrence Tracker</strong>
+        <span>Designed and developed at T-3856</span>
+        <small>© 2026 T-3856</small>
+      </div>
+      <button id="resetData" type="button" class="text-button" disabled>Remove loaded data</button>
+    </footer>
+  </main>
+</body>
+</html>
